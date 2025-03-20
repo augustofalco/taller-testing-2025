@@ -1,0 +1,221 @@
+<app-header></app-header>
+<h2 class="text-center pt-2 py-5">Orden</h2>
+
+
+<div class="row d-flex">
+    <form class="col-4 ms-3" [formGroup]="formRegister">
+        <label for="inputTotal">Descripcion</label>
+        <input type="text" id="inputDescripcion" class="form-control" name="inputDescripcion" placeholder="Breve descripcion" [(ngModel)]="orden.descripcion" formControlName="inputDescripcion" [class.is-invalid]="formRegister.get('inputDescripcion')?.touched && formRegister.get('inputDescripcion')?.invalid"
+            [class.is-valid]="formRegister.get('inputDescripcion')?.valid">
+        <br>
+        <div class="d-flex">
+            <div class="col-8 ">
+                <label for="inputFecha">Fecha Iniciada</label>
+                <input type="date" id="inputFecha" class="form-control" name="inputFecha" placeholder="" [(ngModel)]="orden.fechaInicio" formControlName="inputFecha" [class.is-invalid]="formRegister.get('inputFecha')?.touched && formRegister.get('inputFecha')?.invalid"
+                    [class.is-valid]="formRegister.get('inputFecha')?.valid">
+                <br>
+            </div>
+        </div>
+        <br>
+        <div class="d-flex ">
+            <div class="col-6">
+                <label for="inputAuto">Auto</label>
+                <br>
+                <mat-form-field>
+                    <mat-label>Autos</mat-label>
+                    <mat-select [(value)]="orden.auto.id">
+                        <mat-option [value]="a.id" *ngFor="let a of autos">{{a.patente}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+
+            <div class="col-6 ms-2">
+                <label for="inputTecnico">Tecnico</label>
+                <br>
+                <mat-form-field>
+                    <mat-label>Tecnicos</mat-label>
+                    <mat-select [(value)]="orden.tecnico.id">
+                        <mat-option [value]="m.id" *ngFor="let m of tecnicos">{{m.nombre}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+
+        </div>
+
+
+
+        <!-- Detalle servicios -->
+        <mat-divider></mat-divider>
+        <div class="d-flex mt-2 ">
+            <h5>Detalles servicios</h5>
+            <button type="button" class="btn btn-success ms-2" (click)="agregarFila()">Agregar fila</button>
+
+        </div>
+        <mat-divider class="mt-2 "></mat-divider>
+        <div class="d-flex mt-2" *ngFor="let detalle of orden.detalle;let i = index">
+            <mat-form-field>
+                <mat-label>Servicio</mat-label>
+                <mat-select [(value)]="orden.detalle[i].servicio.id" (valueChange)="calcularTotal()">
+                    <mat-option [value]="s.id" *ngFor="let s of servicios">{{s.nombre}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <!-- <input type="number" id="inputCantidad" class="form-control" name="inputCantidad" placeholder="" [(ngModel)]="orden.detalle[i].cantidad" (change)="cambioCantidad(i,$event)" style="width: 70px; height: 50px;margin-left: 20px;"> -->
+            <input type="number" class="form-control" name="inputCantidad" placeholder="" [(ngModel)]="orden.detalle[i].cantidad" (change)="cambioCantidad(i,$event)" formControlName="inputCantidad{{i+1}}" style="width: 70px; height: 50px;margin-left: 20px;">
+
+            <span *ngIf="orden.detalle[i].subtotal!=undefined" class="col-2 ms-3">Subtotal: ${{orden.detalle[i].subtotal | number : "1.2"}}</span>
+
+            <button type="button" class="btn btn-danger ms-2 " (click)="quitarFila(i)" style="width: 70px; height: 50px;margin-left: 20px;">Quitar</button>
+            <mat-divider></mat-divider>
+
+        </div>
+        <div class=" mt-4 ">
+            <mat-divider></mat-divider>
+            <label for="inputTotal" class="mt-2">Total {{orden.total| number :"1.2"}}</label>
+
+            <mat-divider class="mt-2"></mat-divider>
+        </div>
+
+        <br>
+        <div class="d-flex mt-4 ">
+            <button type="button" class="btn btn-success ms-2" (click)="nuevaOrden()" *ngIf="nuevo">Crear</button>
+            <button type="button" class="btn btn-success" (click)="actualizarOrden()" *ngIf="!nuevo">Modificar</button>
+            <button type="button" class="btn btn-danger ms-4" (click)="cancelar()">Cancelar</button>
+        </div>
+
+        <br>
+        <div class="alert alert-{{alerta.color}} px-3 mx-5" role="alert" *ngIf="alerta.activo">
+            {{alerta.mensaje}}
+        </div>
+
+    </form>
+    <div class="col-7">
+        <div class="col-12">
+            <input type="text" id="inputBuscar" class="form-control" name="inputBuscar" placeholder="Buscar" [(ngModel)]="nombrebuscar" (input)="buscar()">
+
+            <form [formGroup]="formFechas" class="d-flex">
+                <div class="col-5 ">
+                    <label for="fechaInicio">Fecha Desde</label>
+                    <input type="date" id="fechaInicio" class="form-control" name="fechaInicio" placeholder="" formControlName="fechaInicio" (change)="buscar()">
+                    <br>
+                </div>
+                <div class="col-5 ms-5">
+                    <label for="fechaFin">Fecha Hasta</label>
+                    <input type="date" id="fechaFin" class="form-control" name="fechaFin" placeholder="" formControlName="fechaFin" (change)="buscar()">
+                    <br>
+                </div>
+            </form>
+        </div>
+        <table class="table" *ngIf="ordenes != undefined && ordenes.length != 0">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Descripcion</th>
+                    <th scope="col">Auto</th>
+                    <th scope="col">Tecnico</th>
+                    <th scope="col">Fecha Inicio</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let m of ordenes">
+                    <td>{{m.id}}</td>
+                    <td>{{m.descripcion}}</td>
+                    <td>{{m.auto?.patente || 'Sin Auto'}}</td>
+                    <td>{{m.tecnico.nombre}}</td>
+                    <td>{{formatearFecha(m.fechaInicio)}}</td>
+                    <td>{{m.estado?.nombre}}</td>
+                    <td>
+                        <button *ngIf="m.estado?.nombre === 'iniciado'" type="button" class="btn btn-primary" (click)="editar(m)">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                              class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                              <path
+                                  d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z" />
+                          </svg></button>
+                        <button *ngIf="m.estado?.nombre === 'iniciado'" type="button" class="btn btn-danger" (click)="eliminar(m)">
+
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                              class="bi bi-trash-fill" viewBox="0 0 16 16" *ngIf="m.habilitado">
+                              <path
+                                  d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
+                          </svg>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" fill="currentColor"
+                              class="bi bi-arrow-repeat" viewBox="0 0 16 16" *ngIf="!m.habilitado">
+                              <path
+                                  d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z" />
+                              <path fill-rule="evenodd"
+                                  d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z" />
+                          </svg>
+
+                      </button>
+                        <button type="button" class="btn btn-warning" (click)="openModal(m)">VER
+                      </button>
+                        <button *ngIf="m.estado?.nombre != 'iniciado'" type="button" class="btn btn-primary" (click)="generarFactura(m)">FACTURA</button>
+                        <button *ngIf="m.estado?.nombre === 'iniciado'" type="button" class="btn btn-success" (click)="openModalFin(m)">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-square" viewBox="0 0 16 16">
+                      <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                      <path d="M10.97 4.97a.75.75 0 0 1 1.071 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.235.235 0 0 1 .02-.022z"/>
+                    </svg>
+                  </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <mat-paginator [length]="totalItems" [pageSize]="10" [pageSizeOptions]="[10]" aria-label="Select page" (page)="onPageChange($event)">
+        </mat-paginator>
+        <div *ngIf="ordenes == undefined || ordenes.length==0">
+            No hay ordenes
+        </div>
+
+        <div *ngIf="modalVer == true">
+            <div class="container-modal-auto">
+                <div class="content-modal">
+                    <h2>Orden</h2>
+                    <h6><b>Descripcion: </b>{{verOrden.descripcion}}</h6> <b></b>
+                    <div *ngFor="let detalle of verOrden.detalle; let i = index ">
+                        <h5 class="mx-auto text-center">Servicio {{i+1}}</h5>
+                        <p><b>Nombre: </b>{{detalle.servicio.nombre}}</p> <b></b>
+                        <p><b>Cantidad: </b>{{detalle.cantidad}}</p> <b></b>
+                        <p><b>Precio: </b>{{detalle.subtotal}}</p> <b></b>
+                    </div>
+                    <div class="btns">
+                        <button (click)="closeModal()" class="bnt-cerrar">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="modalFin == true">
+            <div class="container-modal-auto">
+                <div class="content-modal">
+                    <form [formGroup]="formFin">
+                        <h2>Orden</h2>
+                        <div class="col-8 ">
+                            <label for="inputFechaFin">Fecha Fin</label>
+                            <input type="date" id="inputFechaFin" class="form-control" name="inputFechaFin" placeholder="" [(ngModel)]="verOrden.fechaFin" formControlName="inputFechaFin" [class.is-invalid]="formRegister.get('inputFechaFin')?.touched && formRegister.get('inputFechaFin')?.invalid"
+                                [class.is-valid]="formRegister.get('inputFechaFin')?.valid">
+                            <br>
+                        </div>
+                        <h6><b>Descripcion: </b>{{verOrden.descripcion}}</h6> <b></b>
+                        <div *ngFor="let detalle of verOrden.detalle; let i = index ">
+                            <h5 class="mx-auto text-center">Servicio {{i+1}}</h5>
+                            <p><b>Nombre: </b>{{detalle.servicio.nombre}}</p> <b></b>
+                            <p><b>Minutos de trabajo: </b>
+                                <input [(ngModel)]="detalle.minutosRealizados" formControlName="inputMinRealizado{{i}}">
+                                <span *ngIf="formFin.get('inputMinRealizado{{i}}')?.hasError('required') || formFin.get('inputMinRealizado{{i}}')?.hasError('min')" style="color: red;">Ingrese los minutos</span>
+                        </div>
+                        <span *ngIf="errorFin" style="color: red;">Ingrese los minutos y positivos</span>
+                        <div class="btns">
+                            <button (click)="finalizar()" class="btn btn-success">Finalizar</button>
+                            <button (click)="closeModal()" class="bnt-cerrar">Cerrar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

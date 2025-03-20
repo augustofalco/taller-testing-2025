@@ -1,0 +1,57 @@
+<app-header></app-header>
+
+<form [formGroup]="formFechas" class="d-flex">
+    <div class="col-5 ">
+        <label for="fechaInicio">Fecha Creada</label>
+        <input type="date" id="fechaInicio" class="form-control" name="fechaInicio" placeholder="" formControlName="fechaInicio" (change)="buscarDatos()">
+        <br>
+    </div>
+    <div class="col-5 ms-5">
+        <label for="fechaFin">Fecha Finalizada</label>
+        <input type="date" id="fechaFin" class="form-control" name="fechaFin" placeholder="" formControlName="fechaFin" (change)="buscarDatos()">
+        <br>
+    </div>
+</form>
+<div *ngIf="hayHistograma">
+    <h2 class="text-center pt-3">Tiempos estimados y reales por cada servicio</h2>
+    <div style=" display: block; width: 70%; " class="text-center mx-auto " *ngIf="mostrarHistograma ">
+        <canvas baseChart [datasets]="barChartData " [labels]="barChartLabels " [options]="barChartOptions " [legend]="barChartLegend ">
+        </canvas>
+    </div>
+    <div *ngIf="serviciosLentos.length!=0" class="text-center">
+        <h5>El/los siguiente/s servicio/s tienen un retardo de 20 minutos como minimo: </h5>
+        <span *ngFor=" let servicio of serviciosLentos ">- {{servicio}}<br></span>
+    </div>
+    <div *ngIf="serviciosLentos.length==0" class="text-center">
+        <h5>Ningun servicio tiene un retardo de 20 minutos como minimo</h5>
+    </div>
+</div>
+<div *ngIf="!hayHistograma">
+    <h2>No hay datos para el histograma con esta fecha</h2>
+</div>
+<mat-divider class="my-5"></mat-divider>
+<div *ngIf="hayCirculo">
+    <h2 class="text-center ">Porcentaje de servicios utilizados</h2>
+    <h5 class="text-center ">Total {{totalPrcentaje}} detalles con servicio</h5>
+    <div style="display: block; width: 30%; " class="text-center mx-auto " *ngIf="mostrarCirculo ">
+        <canvas baseChart class="chart " [data]="pieChartData " [type]="pieChartType " [options]="pieChartOptions " [plugins]="pieChartPlugins ">
+</canvas>
+    </div>
+</div>
+<div *ngIf="!hayCirculo">
+    <h2>No hay datos para el grafico con esta fecha</h2>
+</div>
+
+<mat-divider class="my-5"></mat-divider>
+
+<h3 class="text-center pt-3 ">Números sobre ordenes de trabajo</h3>
+<div class="row w-100 justify-content-around ">
+    <span class="col-4 bg-danger py-4 "><b>Sin terminar: {{estadisticaOrden.noTerminado}}</b></span>
+    <span class="col-4 bg-success py-4 "><b>Terminadas: {{estadisticaOrden.terminado}}</b></span>
+</div>
+<div class="row container justify-content-around mt-2 ">
+
+    <span class="col-4 bg-info py-4 "><b>Total ordenes: {{estadisticaOrden.noTerminado + estadisticaOrden.terminado}}</b></span>
+
+    <span class="col-4 bg-primary py-4 "><b>Total recaudado: ${{estadisticaOrden.total}}</b></span>
+</div>
