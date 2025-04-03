@@ -16,7 +16,7 @@ public class Pais implements Comparable {
 
     @Column(columnDefinition = "TEXT")
     private String nombre;
-    
+
     private int estado;
 
     public int getEstado() {

@@ -19,7 +19,7 @@ public class AutoService {
 
     @Autowired
     AutoRepository autoRepository;
-    
+
     @Autowired
     ModeloRepository modeloRepository;
 
@@ -39,7 +39,7 @@ public class AutoService {
         return autoRepository.findAll();
     }
 
-    public List<Auto> findHabiliitados() {
+    public List<Auto> findHabilitados() {
         return autoRepository.findByEstadoIsTrue();
     }
 

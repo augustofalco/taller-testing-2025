@@ -34,7 +34,7 @@ public class AutoController {
 
     @Autowired
     AutoService autoService;
-    
+
     Map<String, String> response = new HashMap<>();
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
@@ -79,7 +79,7 @@ public class AutoController {
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/mostrarHabilitados")
     public List<Auto> mostrarHabilitados() {
-        return autoService.findHabiliitados();
+        return autoService.findHabilitados();
     }
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
