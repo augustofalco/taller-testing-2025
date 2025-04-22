@@ -31,7 +31,7 @@ public class OrdenTrabajoController {
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/guardar")
-    public ResponseEntity guardar(@RequestBody OrdenTrabajo model) {
+    public ResponseEntity<Map<String, String>> guardar(@RequestBody OrdenTrabajo model) {
         try {
             ordenTrabajoService.save(model);
 
@@ -80,7 +80,7 @@ public class OrdenTrabajoController {
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/editar/{id}")
-    public ResponseEntity actualizar(@PathVariable int id, @RequestBody OrdenTrabajo model) {
+    public ResponseEntity<Map<String, String>> actualizar(@PathVariable int id, @RequestBody OrdenTrabajo model) {
         // OrdenTrabajo ordenTrabajo = ordenTrabajoService.findById(id).orElse(null);
         try {
 
@@ -120,7 +120,7 @@ public class OrdenTrabajoController {
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/eliminar/{id}")
-    public ResponseEntity eliminar(@PathVariable int id) {
+    public ResponseEntity<Map<String, String>> eliminar(@PathVariable int id) {
         try {
             Optional<OrdenTrabajo> optionalOrden = ordenTrabajoService.findById(id);
 

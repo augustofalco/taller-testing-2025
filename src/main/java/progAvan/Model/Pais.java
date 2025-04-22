@@ -8,7 +8,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "pais")
-public class Pais implements Comparable {
+public class Pais implements Comparable<Pais> {
 
     @Id
     @GeneratedValue(strategy = javax.persistence.GenerationType.AUTO)
@@ -53,8 +53,7 @@ public class Pais implements Comparable {
     }
 
     @Override
-    public int compareTo(Object o) {
-        Pais p = (Pais) o;
+    public int compareTo(Pais p) {
         return this.getNombre().compareTo(p.getNombre());
     }
 }

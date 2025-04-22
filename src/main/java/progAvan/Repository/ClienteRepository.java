@@ -13,7 +13,7 @@ import progAvan.Model.Cliente;
 
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
-    
+
     List<Cliente> findByEstadoIsTrue();
 
     List<Cliente> findByEstadoIsTrue(Pageable pageable);
@@ -21,6 +21,6 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 
     @Transactional
     @Modifying
-    @Query(value = "SELECT * FROM Cliente where nombre ILIKE %:nombre% ", nativeQuery = true)
+    @Query(value = "SELECT * FROM Cliente where LOWER(nombre) LIKE LOWER(CONCAT('%', :nombre, '%'))", nativeQuery = true)
     List<Cliente> buscarPorAtributo(String nombre);
 }

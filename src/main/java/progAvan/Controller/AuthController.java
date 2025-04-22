@@ -25,7 +25,7 @@ import progAvan.Service.AuthService;
 @RequiredArgsConstructor
 @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
 public class AuthController {
-    
+
     private final AuthService authService;
 
     @Autowired
@@ -33,30 +33,29 @@ public class AuthController {
 
     Map<String, String> response = new HashMap<>();
 
-    
     @PostMapping(value = "login")
-    public ResponseEntity<String> login(@RequestBody User usuario)
-    {
+    public ResponseEntity<String> login(@RequestBody User usuario) {
         return ResponseEntity.ok(authService.login(usuario));
     }
 
     @PostMapping(value = "register")
-    public ResponseEntity<String> register(@RequestBody User usuario)
-    {
+    public ResponseEntity<String> register(@RequestBody User usuario) {
         return ResponseEntity.ok(authService.register(usuario));
     }
 
     @PostMapping("/current")
-    public ResponseEntity getCurrentUser(@RequestBody User usuario) {
-        Authentication authentication= authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(usuario.getUsername(),usuario.getPassword()));
+    public ResponseEntity<Map<String, String>> getCurrentUser(@RequestBody User usuario) {
+        Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(usuario.getUsername(), usuario.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        
+
         if (authentication != null && authentication.isAuthenticated()) {
             this.response.put("message", "El usuario ha iniciado sesión como: " + authentication.getName());
             return new ResponseEntity<>(this.response, HttpStatus.OK);
         } else {
             this.response.put("message", "El usuario no ha iniciado sesión");
-            return new ResponseEntity<>(this.response, HttpStatus.OK);        }
+            return new ResponseEntity<>(this.response, HttpStatus.OK);
+        }
     }
 }

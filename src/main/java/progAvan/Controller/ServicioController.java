@@ -34,7 +34,7 @@ public class ServicioController {
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/guardar")
-    public ResponseEntity guardar(@RequestBody Servicio model) {
+    public ResponseEntity<Map<String, String>> guardar(@RequestBody Servicio model) {
         try {
             servicioService.save(model);
             this.response.put("message", "success");
@@ -72,7 +72,7 @@ public class ServicioController {
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/editar/{id}")
-    public ResponseEntity actualizar(@PathVariable int id, @RequestBody Servicio model) {
+    public ResponseEntity<Map<String, String>> actualizar(@PathVariable int id, @RequestBody Servicio model) {
         // Servicio servicio = servicioService.findById(id).orElse(null);
         try {
             servicioService.save(model);
@@ -86,7 +86,7 @@ public class ServicioController {
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/eliminar/{id}")
-    public ResponseEntity eliminar(@PathVariable int id) {
+    public ResponseEntity<Map<String, String>> eliminar(@PathVariable int id) {
         try {
             Optional<Servicio> optionalServicio = servicioService.findById(id);
 
@@ -95,8 +95,7 @@ public class ServicioController {
                 // servicio.setEstado(!servicio.getEstado());
                 // servicioService.save(servicio);
                 servicioService.deshabilitarServicioYRelacionados(
-                        servicio.getId()
-                        );
+                        servicio.getId());
 
                 this.response.put("message", "success");
                 return new ResponseEntity<>(this.response, HttpStatus.OK);

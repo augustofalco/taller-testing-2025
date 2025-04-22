@@ -30,7 +30,7 @@ public class ModeloController {
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/guardar")
-    public ResponseEntity guardar(@RequestBody Modelo model) {
+    public ResponseEntity<Map<String, String>> guardar(@RequestBody Modelo model) {
         try {
             modeloService.save(model);
             this.response.put("message", "success");
@@ -57,7 +57,7 @@ public class ModeloController {
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/mostrarHabilitados")
     public List<Modelo> mostrarHabilitados() {
-        return modeloService.findHabiliitados();
+        return modeloService.findHabilitados();
     }
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
@@ -69,7 +69,7 @@ public class ModeloController {
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/editar/{id}")
-    public ResponseEntity actualizar(@PathVariable int id, @RequestBody Modelo model) {
+    public ResponseEntity<Map<String, String>> actualizar(@PathVariable int id, @RequestBody Modelo model) {
         // Modelo modelo = modeloService.findById(id).orElse(null);
         try {
             modeloService.save(model);
@@ -83,7 +83,7 @@ public class ModeloController {
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/eliminar/{id}")
-    public ResponseEntity eliminar(@PathVariable int id) {
+    public ResponseEntity<Map<String, String>> eliminar(@PathVariable int id) {
         try {
             Optional<Modelo> optionalModelo = modeloService.findById(id);
 

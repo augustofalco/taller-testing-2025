@@ -35,6 +35,6 @@ public interface AutoRepository extends JpaRepository<Auto, Integer> {
 
     @Transactional
     @Modifying
-    @Query(value = "SELECT * FROM Auto where patente ILIKE %:patente% ", nativeQuery = true)
+    @Query(value = "SELECT * FROM Auto WHERE LOWER(patente) LIKE LOWER(CONCAT('%', :patente, '%'))", nativeQuery = true)
     List<Auto> findByPatente(String patente);
 }

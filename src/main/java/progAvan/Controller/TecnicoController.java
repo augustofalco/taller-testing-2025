@@ -26,7 +26,7 @@ public class TecnicoController {
 
     @Autowired
     private TecnicoService tecnicoService;
-    
+
     Map<String, String> response = new HashMap<>();
 
     @Value("${path_general}")
@@ -34,7 +34,7 @@ public class TecnicoController {
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/guardar")
-    public ResponseEntity guardar(@RequestBody Tecnico model) {
+    public ResponseEntity<Map<String, String>> guardar(@RequestBody Tecnico model) {
         try {
             tecnicoService.save(model);
             this.response.put("message", "success");
@@ -72,7 +72,7 @@ public class TecnicoController {
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/editar/{id}")
-    public ResponseEntity actualizar(@PathVariable int id, @RequestBody Tecnico model) {
+    public ResponseEntity<Map<String, String>> actualizar(@PathVariable int id, @RequestBody Tecnico model) {
         // Tecnico tecnico = tecnicoService.findById(id).orElse(null);
         try {
             tecnicoService.save(model);
@@ -86,7 +86,7 @@ public class TecnicoController {
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/eliminar/{id}")
-    public ResponseEntity eliminar(@PathVariable int id) {
+    public ResponseEntity<Map<String, String>> eliminar(@PathVariable int id) {
         try {
             Optional<Tecnico> optionalTecnico = tecnicoService.findById(id);
 

@@ -26,7 +26,7 @@ public class ClienteController {
 
     @Autowired
     private ClienteService clienteService;
-    
+
     Map<String, String> response = new HashMap<>();
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
@@ -41,20 +41,19 @@ public class ClienteController {
     public long longitud() {
         return clienteService.longitud();
     }
-    
+
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/mostrar/{nombre}")
     public List<Cliente> buscarPorAtributo(@PathVariable String nombre) {
         return clienteService.buscarPorAtributo(nombre);
     }
 
-
     @Value("${path_general}")
     String path;
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/guardar")
-    public ResponseEntity guardar(@RequestBody Cliente model) {
+    public ResponseEntity<Map<String, String>> guardar(@RequestBody Cliente model) {
         try {
             clienteService.save(model);
             this.response.put("message", "success");
@@ -73,7 +72,7 @@ public class ClienteController {
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/editar/{id}")
-    public ResponseEntity actualizar(@PathVariable int id, @RequestBody Cliente model) {
+    public ResponseEntity<Map<String, String>> actualizar(@PathVariable int id, @RequestBody Cliente model) {
         // Cliente cliente = clienteService.findById(id).orElse(null);
         try {
             clienteService.save(model);
@@ -93,7 +92,7 @@ public class ClienteController {
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/eliminar/{id}")
-    public ResponseEntity eliminar(@PathVariable int id) {
+    public ResponseEntity<Map<String, String>> eliminar(@PathVariable int id) {
         try {
             Optional<Cliente> optionalCliente = clienteService.findById(id);
 

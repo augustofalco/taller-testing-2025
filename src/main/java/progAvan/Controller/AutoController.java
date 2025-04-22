@@ -59,7 +59,7 @@ public class AutoController {
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/guardar")
     @ApiOperation(value = "Traer auto")
-    public ResponseEntity guardar(@Valid @RequestBody Auto model) {
+    public ResponseEntity<Map<String, String>> guardar(@Valid @RequestBody Auto model) {
         try {
             autoService.save(model);
             this.response.put("message", "success");
@@ -84,7 +84,7 @@ public class AutoController {
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/editar/{id}")
-    public ResponseEntity actualizar(@PathVariable int id, @Valid @RequestBody Auto model) {
+    public ResponseEntity<Map<String, String>> actualizar(@PathVariable int id, @Valid @RequestBody Auto model) {
         // Auto auto = autoService.findById(id).orElse(null);
         try {
             autoService.save(model);
@@ -98,7 +98,7 @@ public class AutoController {
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/eliminar/{id}")
-    public ResponseEntity eliminar(@PathVariable int id) {
+    public ResponseEntity<Map<String, String>> eliminar(@PathVariable int id) {
         try {
             Optional<Auto> optionalAuto = autoService.findById(id);
 

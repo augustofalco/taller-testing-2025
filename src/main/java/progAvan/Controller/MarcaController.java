@@ -34,7 +34,7 @@ public class MarcaController {
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/guardar")
-    public ResponseEntity guardar(@RequestBody Marca model) {
+    public ResponseEntity<Map<String, String>> guardar(@RequestBody Marca model) {
         try {
             marcaService.save(model);
             this.response.put("message", "success");
@@ -72,7 +72,7 @@ public class MarcaController {
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/editar/{id}")
-    public ResponseEntity actualizar(@PathVariable int id, @RequestBody Marca model) {
+    public ResponseEntity<Map<String, String>> actualizar(@PathVariable int id, @RequestBody Marca model) {
         // Marca marca = marcaService.findById(id).orElse(null);
         try {
             marcaService.save(model);
@@ -86,7 +86,7 @@ public class MarcaController {
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/eliminar/{id}")
-    public ResponseEntity eliminar(@PathVariable int id) {
+    public ResponseEntity<Map<String, String>> eliminar(@PathVariable int id) {
         try {
             Optional<Marca> optionalMarca = marcaService.findById(id);
 
