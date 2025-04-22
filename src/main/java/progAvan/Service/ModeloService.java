@@ -28,6 +28,22 @@ public class ModeloService {
     AutoRepository autoRepository;
 
     public void save(Modelo modelo) {
+        // Validar que el nombre no sea nulo o vacío
+        if (modelo.getNombre() == null || modelo.getNombre().trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre del modelo no puede ser nulo o vacío");
+        }
+
+        // Validar que la marca no sea nula
+        if (modelo.getMarca() == null) {
+            throw new IllegalArgumentException("La marca del modelo no puede ser nula");
+        }
+
+        // Validar que no exista un modelo con el mismo nombre
+        Optional<Modelo> modeloExistente = modeloRepository.findByNombre(modelo.getNombre());
+        if (modeloExistente.isPresent() && !modeloExistente.get().getId().equals(modelo.getId())) {
+            throw new IllegalArgumentException("Ya existe un modelo con el nombre: " + modelo.getNombre());
+        }
+
         modeloRepository.save(modelo);
     }
 
@@ -39,13 +55,12 @@ public class ModeloService {
         return modeloRepository.findAll();
     }
 
-    public List<Modelo> findHabiliitados() {
+    public List<Modelo> findHabilitados() {
         return modeloRepository.findByEstadoIsTrue();
     }
 
     public List<Modelo> findModelosXMarca(int id) {
         return modeloRepository.findByMarca(id);
-
     }
 
     public Page<Modelo> mostrar(Pageable pageable) {
@@ -71,5 +86,4 @@ public class ModeloService {
         modeloRepository.deshabilitarModelo(modeloId);
         autoRepository.deshabilitarAutosPorModeloId(modeloId);
     }
-
 }

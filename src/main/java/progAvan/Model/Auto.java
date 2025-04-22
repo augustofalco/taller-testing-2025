@@ -28,7 +28,7 @@ public class Auto {
     private String patente;
 
     private String anio;
-    
+
     private boolean estado;
 
     public boolean getEstado() {
@@ -40,9 +40,16 @@ public class Auto {
     }
 
     public boolean validarPatente(String patente) {
-        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("[A-Z]{2}\\d{3}[A-Z]{2}");
+        if (patente == null) {
+            return false;
+        }
+        // Patrón para patentes nuevas: AA000AA
+        String patronNuevo = "[A-Z]{2}\\d{3}[A-Z]{2}";
+        // Patrón para patentes viejas: AAA000
+        String patronViejo = "[A-Z]{3}\\d{3}";
+        // Combinar ambos patrones con el operador OR (|)
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(patronNuevo + "|" + patronViejo);
         Matcher matcher = pattern.matcher(patente);
         return matcher.matches();
     }
-
 }

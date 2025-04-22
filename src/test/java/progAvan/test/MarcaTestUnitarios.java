@@ -45,6 +45,7 @@ public class MarcaTestUnitarios {
         marca.setEstado(true);
     }
 
+    // TC-MARCA-002
     @Test
     void testFindById() {
         when(marcaRepository.findById(1L)).thenReturn(Optional.of(marca));
@@ -56,12 +57,66 @@ public class MarcaTestUnitarios {
         verify(marcaRepository, times(1)).findById(1L);
     }
 
+    // TC-MARCA-008
+    @Test
+    void testFindByIdInexistente() {
+        when(marcaRepository.findById(999L)).thenReturn(Optional.empty());
+
+        Optional<Marca> resultado = marcaService.findById(999L);
+
+        assertTrue(resultado.isEmpty());
+        verify(marcaRepository, times(1)).findById(999L);
+    }
+
+    // TC-MARCA-001
     @Test
     void testSave() {
         marcaService.save(marca);
         verify(marcaRepository, times(1)).save(marca);
     }
 
+    // TC-MARCA-006
+    @Test
+    void testSaveMarcaSinNombre() {
+        Marca marcaSinNombre = new Marca();
+        marcaSinNombre.setId(2);
+        marcaSinNombre.setNombre(null); // Nombre nulo
+        marcaSinNombre.setEstado(true);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            marcaService.save(marcaSinNombre);
+        });
+    }
+
+    // TC-MARCA-009
+    @Test
+    void testSaveMarcaNombreVacio() {
+        Marca marcaNombreVacio = new Marca();
+        marcaNombreVacio.setId(3);
+        marcaNombreVacio.setNombre("  "); // Nombre solo con espacios
+        marcaNombreVacio.setEstado(true);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            marcaService.save(marcaNombreVacio);
+        });
+    }
+
+    // TC-MARCA-007
+    @Test
+    void testSaveMarcaDuplicada() {
+        Marca marcaDuplicada = new Marca();
+        marcaDuplicada.setId(2);
+        marcaDuplicada.setNombre("Toyota");
+        marcaDuplicada.setEstado(true);
+
+        when(marcaRepository.findByNombre("Toyota")).thenReturn(Optional.of(marca));
+
+        assertThrows(IllegalStateException.class, () -> {
+            marcaService.save(marcaDuplicada);
+        });
+    }
+
+    // TC-MARCA-003
     @Test
     void testFindAll() {
         when(marcaRepository.findAll()).thenReturn(Arrays.asList(marca));
@@ -73,6 +128,7 @@ public class MarcaTestUnitarios {
         verify(marcaRepository, times(1)).findAll();
     }
 
+    // TC-MARCA-004
     @Test
     void testFindHabilitados() {
         when(marcaRepository.findByEstadoIsTrue()).thenReturn(Arrays.asList(marca));
@@ -85,6 +141,7 @@ public class MarcaTestUnitarios {
         verify(marcaRepository, times(1)).findByEstadoIsTrue();
     }
 
+    // TC-MARCA-005
     @Test
     void testDeshabilitarMarcaYRelacionados() {
         doNothing().when(marcaRepository).deshabilitarMarca(1);

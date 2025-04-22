@@ -1,6 +1,7 @@
 package progAvan.test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -55,8 +56,61 @@ public class ModeloTestUnitarios {
 
     @Test
     void testSave() {
+        doAnswer(invocation -> {
+            Modelo modelo = invocation.getArgument(0);
+            if (modelo.getNombre() == null || modelo.getNombre().trim().isEmpty()) {
+                throw new IllegalArgumentException("El nombre del modelo no puede ser nulo o vacío");
+            }
+            if (modelo.getMarca() == null) {
+                throw new IllegalArgumentException("La marca del modelo no puede ser nula");
+            }
+            return null;
+        }).when(modeloRepository).save(any(Modelo.class));
+
         modeloService.save(modelo);
         verify(modeloRepository, times(1)).save(modelo);
+    }
+
+    @Test
+    void testSaveModeloNombreVacio() {
+        Modelo modeloNombreVacio = new Modelo();
+        modeloNombreVacio.setId(2);
+        modeloNombreVacio.setNombre("  "); // Espacios vacíos
+        modeloNombreVacio.setEstado(true);
+        modeloNombreVacio.setMarca(marca);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            modeloService.save(modeloNombreVacio);
+        });
+    }
+
+    @Test
+    void testSaveModeloConMarcaNula() {
+        Modelo modeloSinMarca = new Modelo();
+        modeloSinMarca.setId(3);
+        modeloSinMarca.setNombre("Etios");
+        modeloSinMarca.setEstado(true);
+        modeloSinMarca.setMarca(null); // Marca no asignada
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            modeloService.save(modeloSinMarca);
+        });
+    }
+
+    @Test
+    void testSaveModeloDuplicado() {
+        when(modeloRepository.findByNombre("Corolla")).thenReturn(Optional.of(modelo));
+
+        Modelo modeloDuplicado = new Modelo();
+        modeloDuplicado.setNombre("Corolla");
+        modeloDuplicado.setEstado(true);
+        modeloDuplicado.setMarca(marca);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            modeloService.save(modeloDuplicado);
+        });
+
+        verify(modeloRepository, times(1)).findByNombre("Corolla");
     }
 
     @Test
@@ -85,7 +139,8 @@ public class ModeloTestUnitarios {
     void testFindHabilitados() {
         when(modeloRepository.findByEstadoIsTrue()).thenReturn(List.of(modelo));
 
-        List<Modelo> modelos = modeloService.findHabiliitados();
+        // Corregido el método con la ortografía correcta
+        List<Modelo> modelos = modeloService.findHabilitados();
 
         assertEquals(1, modelos.size());
         assertTrue(modelos.get(0).getEstado());
@@ -125,4 +180,5 @@ public class ModeloTestUnitarios {
         verify(modeloRepository, times(1)).deshabilitarModelo(1);
         verify(autoRepository, times(1)).deshabilitarAutosPorModeloId(1);
     }
+
 }

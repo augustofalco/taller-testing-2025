@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import progAvan.Model.Modelo;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,10 +15,12 @@ import org.springframework.data.jpa.repository.Query;
 
 @Repository
 public interface ModeloRepository extends JpaRepository<Modelo, Integer> {
-    
+
     List<Modelo> findByEstadoIsTrue();
 
     List<Modelo> findByEstadoIsTrue(Pageable pageable);
+
+    Optional<Modelo> findByNombre(String nombre);
 
     @Transactional
     @Modifying

@@ -1,10 +1,7 @@
 package progAvan.test;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import progAvan.Model.Auto;
 
@@ -20,6 +17,7 @@ public class PatenteValidatorTest {
     public void testPatenteValida() {
         assertTrue(auto.validarPatente("AB123CD"));
         assertTrue(auto.validarPatente("XY987ZW"));
+        assertTrue(auto.validarPatente("GSS456"));
     }
 
     @Test

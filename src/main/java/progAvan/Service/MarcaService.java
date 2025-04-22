@@ -27,6 +27,15 @@ public class MarcaService {
     AutoRepository autoRepository;
 
     public void save(Marca model) {
+        if (model.getNombre() == null || model.getNombre().trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre de la marca no puede ser nulo o vacío");
+        }
+
+        Optional<Marca> marcaExistente = marcaRepository.findByNombre(model.getNombre());
+        if (marcaExistente.isPresent() && !marcaExistente.get().getId().equals(model.getId())) {
+            throw new IllegalStateException("Ya existe una marca con el nombre: " + model.getNombre());
+        }
+
         marcaRepository.save(model);
     }
 
