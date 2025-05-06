@@ -24,7 +24,7 @@ public class Auto {
     private Cliente cliente;
 
     @Column(unique = true)
-    @Pattern(regexp = "[A-Z]{2}\\d{3}[A-Z]{2}", message = "El formato de la patente no es válido")
+    @Pattern(regexp = "([A-Z]{3}\\d{3})|([A-Z]{2}\\d{3}[A-Z]{2})", message = "El formato de la patente no es válido (AAA000 o AA000AA)")
     private String patente;
 
     private String anio;
