@@ -39,6 +39,10 @@ public class MarcaController {
             marcaService.save(model);
             this.response.put("message", "success");
             return new ResponseEntity<>(this.response, HttpStatus.OK);
+        } catch (IllegalStateException e) {
+            // Captura específica para el mensaje de marca existente
+            this.response.put("message", e.getMessage());
+            return new ResponseEntity<>(this.response, HttpStatus.CONFLICT);
         } catch (Exception e) {
             this.response.put("message", "error interno");
             return new ResponseEntity<>(this.response, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -78,6 +82,10 @@ public class MarcaController {
             marcaService.save(model);
             this.response.put("message", "success");
             return new ResponseEntity<>(this.response, HttpStatus.OK);
+        } catch (IllegalStateException e) {
+            // Captura específica para el mensaje de marca existente
+            this.response.put("message", e.getMessage());
+            return new ResponseEntity<>(this.response, HttpStatus.CONFLICT);
         } catch (Exception e) {
             this.response.put("message", "error interno");
             return new ResponseEntity<>(this.response, HttpStatus.INTERNAL_SERVER_ERROR);

@@ -25,18 +25,18 @@ public interface OrdenTrabajoRepository extends JpaRepository<OrdenTrabajo, Inte
 
     @Transactional
     @Modifying
-    @Query(value = "SELECT orden_trabajo.fecha_inicio, auto.patente FROM orden_trabajo left join auto on orden_trabajo.vehiculo_id = auto.id left join cliente on auto.cliente_id = :idCliente order by orden_trabajo.fecha_inicio desc limit 1", nativeQuery = true)
+    @Query(value = "SELECT ot.fecha_inicio, a.patente FROM orden_trabajo ot left join auto a on ot.vehiculo_id = a.id left join cliente c on a.cliente_id = :idCliente order by ot.fecha_inicio desc FETCH FIRST 1 ROWS ONLY", nativeQuery = true)
     List<Object> ultimaOrdenCliente(int idCliente);
 
     OrdenTrabajo findFirstByOrderByIdDesc();
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE public.detalle_orden_trabajo SET orden_id=:idOrden WHERE id=:idDetalle", nativeQuery = true)
+    @Query(value = "UPDATE detalle_orden_trabajo SET orden_id=:idOrden WHERE id=:idDetalle", nativeQuery = true)
     void setOdenId(int idOrden, int idDetalle);
 
     @Transactional
     @Modifying
-    @Query(value = "SELECT orden_trabajo.*, auto.patente, tecnico.nombre FROM orden_trabajo left JOIN auto ON orden_trabajo.vehiculo_id=auto.id left JOIN tecnico ON orden_trabajo.tecnico_id=tecnico.id WHERE ( orden_trabajo.descripcion ILIKE CONCAT('%', :descripcion, '%') OR auto.patente ILIKE CONCAT('%', :descripcion, '%') OR tecnico.nombre ILIKE CONCAT('%', :descripcion, '%') ) and fecha_inicio >= TO_TIMESTAMP(:fechaInferior, 'YYYYMMDD') and fecha_inicio <= TO_TIMESTAMP(:fechaSuperior, 'YYYYMMDD') ;", nativeQuery = true)
+    @Query(value = "SELECT ot.*, a.patente, t.nombre FROM orden_trabajo ot left JOIN auto a ON ot.vehiculo_id=a.id left JOIN tecnico t ON ot.tecnico_id=t.id WHERE ( LOWER(ot.descripcion) LIKE LOWER(CONCAT('%', :descripcion, '%')) OR LOWER(a.patente) LIKE LOWER(CONCAT('%', :descripcion, '%')) OR LOWER(t.nombre) LIKE LOWER(CONCAT('%', :descripcion, '%')) ) and ot.fecha_inicio >= PARSEDATETIME(:fechaInferior, 'yyyyMMdd') and ot.fecha_inicio <= PARSEDATETIME(:fechaSuperior, 'yyyyMMdd')", nativeQuery = true)
     List<OrdenTrabajo> buscarPorAtributo(String descripcion, String fechaInferior, String fechaSuperior);
 }

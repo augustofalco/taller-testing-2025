@@ -33,7 +33,12 @@ public class MarcaService {
 
         Optional<Marca> marcaExistente = marcaRepository.findByNombre(model.getNombre());
         if (marcaExistente.isPresent() && !marcaExistente.get().getId().equals(model.getId())) {
-            throw new IllegalStateException("Ya existe una marca con el nombre: " + model.getNombre());
+            Marca marcaEncontrada = marcaExistente.get();
+            if (marcaEncontrada.getEstado()) {
+                throw new IllegalStateException("La marca ya existe");
+            } else {
+                throw new IllegalStateException("La marca ya existe pero esta archivada");
+            }
         }
 
         marcaRepository.save(model);
