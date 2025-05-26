@@ -61,6 +61,12 @@ public class ModeloController {
     }
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
+    @GetMapping(value = "/mostrarHabilitados")
+    public List<Modelo> mostrarInhabilitados() {
+        return modeloService.findInhabilitados();
+    }
+
+    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/mostrarXMarca/{id}")
     public List<Modelo> mostrarXMarca(@PathVariable int id) {
         System.out.println(id);

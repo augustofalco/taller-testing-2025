@@ -59,6 +59,10 @@ public class ModeloService {
         return modeloRepository.findByEstadoIsTrue();
     }
 
+    public List<Modelo> findInhabilitados() {
+        return modeloRepository.findByEstadoIsFalse();
+    }
+
     public List<Modelo> findModelosXMarca(int id) {
         return modeloRepository.findByMarca(id);
     }

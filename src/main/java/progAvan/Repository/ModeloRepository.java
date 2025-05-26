@@ -37,4 +37,6 @@ public interface ModeloRepository extends JpaRepository<Modelo, Integer> {
     @Query(value = "UPDATE Modelo SET estado = false WHERE marca_id = :marcaId", nativeQuery = true)
     void deshabilitarModelosPorMarcaId(Integer marcaId);
 
+    List<Modelo> findByEstadoIsFalse();
+
 }
