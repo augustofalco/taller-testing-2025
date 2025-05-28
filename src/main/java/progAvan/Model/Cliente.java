@@ -1,6 +1,7 @@
 package progAvan.Model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,10 +25,9 @@ public class Cliente {
 
     private String direccion;
 
-    @Column(unique = true)
     private String telefono;
 
-    @Column(unique = true)
+    @Email(message = "El formato del email no es válido")
     private String email;
 
     @Column(columnDefinition = "boolean default true")
@@ -35,7 +35,7 @@ public class Cliente {
 
     @Column(nullable = true)
     private LocalDateTime fecha_ultima_actualizacion;
-    
+
     @Column()
     private String observaciones;
 

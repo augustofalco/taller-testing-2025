@@ -61,7 +61,7 @@ public class ModeloController {
     }
 
     @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
-    @GetMapping(value = "/mostrarHabilitados")
+    @GetMapping(value = "/mostrarInhabilitados")
     public List<Modelo> mostrarInhabilitados() {
         return modeloService.findInhabilitados();
     }
