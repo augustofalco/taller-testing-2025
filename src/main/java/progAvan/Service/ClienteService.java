@@ -29,7 +29,8 @@ public class ClienteService {
 
             if (cliente.getDni() <= 0) {
                 return Result.failure(new ValidationError("dni", "El DNI debe ser un número positivo"));
-            } // Validar DNI duplicado (excepto en actualizaciones del mismo cliente)
+            }
+            // Validar DNI duplicado (excepto en actualizaciones del mismo cliente)
             Optional<Cliente> clienteExistente = clienteRepository.findByDni(cliente.getDni());
             if (clienteExistente.isPresent() && !clienteExistente.get().getId().equals(cliente.getId())) {
                 // Verificar si el cliente existente está archivado (deshabilitado)
@@ -42,10 +43,20 @@ public class ClienteService {
                     return Result.failure(
                             new DuplicateError("Cliente", "DNI", String.valueOf(cliente.getDni())));
                 }
-            } // Si todas las validaciones pasan, guardar el cliente
+            }
+            // Si todas las validaciones pasan, guardar el cliente
             Cliente clienteGuardado = clienteRepository.save(cliente);
             return Result.success(clienteGuardado, "Cliente guardado correctamente");
 
+        } catch (Exception e) {
+            return Result.failure(new ServerInternalError(e));
+        }
+    }
+
+    public Result<List<Cliente>> findAll() {
+        try {
+            List<Cliente> clientes = clienteRepository.findAll();
+            return Result.success(clientes, "Clientes recuperados con éxito");
         } catch (Exception e) {
             return Result.failure(new ServerInternalError(e));
         }
@@ -108,15 +119,6 @@ public class ClienteService {
 
     public List<Cliente> buscarPorAtributo(String nombre) {
         return clienteRepository.buscarPorAtributo(nombre);
-    }
-
-    public Result<List<Cliente>> findAll() {
-        try {
-            List<Cliente> clientes = clienteRepository.findAll();
-            return Result.success(clientes, "Clientes recuperados con éxito");
-        } catch (Exception e) {
-            return Result.failure(new ServerInternalError(e));
-        }
     }
 
     public void actualizarUltimaFechaVisita(long id) {

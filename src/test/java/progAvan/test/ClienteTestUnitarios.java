@@ -196,23 +196,18 @@ public class ClienteTestUnitarios {
 
     // TC-CLIENTE-010
     @Test
-    void testSaveClienteConDniDuplicado() { // Preparamos un cliente existente con el mismo DNI
-        Cliente clienteExistente = new Cliente();
-        clienteExistente.setId(5);
-        clienteExistente.setDni(98765432);
-        clienteExistente.setNombre("Cliente Existente");
-        clienteExistente.setEstado(true);
+    void testSaveClienteConDniDuplicado() {
 
         Cliente clienteConDniDuplicado = new Cliente();
         clienteConDniDuplicado.setId(null); // No tiene ID aún (nuevo cliente)
-        clienteConDniDuplicado.setDni(98765432); // DNI duplicado
+        clienteConDniDuplicado.setDni(12345678); // DNI duplicado
         clienteConDniDuplicado.setNombre("Cliente Nuevo");
         clienteConDniDuplicado.setDireccion("Otra Calle 456");
         clienteConDniDuplicado.setTelefono("11-4444-5555");
         clienteConDniDuplicado.setEmail("nuevo@test.com");
         clienteConDniDuplicado.setEstado(true);
 
-        when(clienteRepository.findByDni(98765432)).thenReturn(Optional.of(clienteExistente));
+        when(clienteRepository.findByDni(clientePrueba.getDni())).thenReturn(Optional.of(clientePrueba));
 
         // Ejecutar
         Result<Cliente> resultado = clienteService.save(clienteConDniDuplicado);

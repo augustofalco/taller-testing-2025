@@ -16,6 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import progAvan.Model.Tecnico;
 import progAvan.Repository.TecnicoRepository;
 import progAvan.Service.TecnicoService;
+import progAvan.shared.Result;
+import progAvan.shared.error.*;
 
 @ExtendWith(MockitoExtension.class)
 public class TecnicoTestUnitarios {
@@ -26,82 +28,107 @@ public class TecnicoTestUnitarios {
     @InjectMocks
     private TecnicoService tecnicoService;
 
-    private Tecnico tecnico;
+    private Tecnico tecnicoPrueba;
+    Tecnico tecnicoDeshabilitado = new Tecnico();
 
     @BeforeEach
     void setUp() {
-        tecnico = new Tecnico();
-        tecnico.setId(1);
-        tecnico.setNombre("Juan Técnico");
-        tecnico.setDni(12345678);
-        tecnico.setEstado(true);
+        tecnicoPrueba = new Tecnico();
+        tecnicoPrueba.setId(1);
+        tecnicoPrueba.setNombre("Juan Técnico");
+        tecnicoPrueba.setDni(12345678);
+        tecnicoPrueba.setEstado(true);
+
+        // tecnico deshabilitado para pruebas
+        tecnicoDeshabilitado.setId(3);
+        tecnicoDeshabilitado.setNombre("Técnico Deshabilitado");
+        tecnicoDeshabilitado.setDni(87654321);
+        tecnicoDeshabilitado.setEstado(false);
     }
 
     // TC-TECNICO-001
     @Test
-    void testSave() {
-        when(tecnicoRepository.save(any(Tecnico.class))).thenReturn(tecnico);
-        tecnicoService.save(tecnico);
-        verify(tecnicoRepository, times(1)).save(tecnico);
+    void testSaveTecnicoExitoso() {
+        when(tecnicoRepository.save(any(Tecnico.class))).thenReturn(tecnicoPrueba);
+        when(tecnicoRepository.findByDni(tecnicoPrueba.getDni())).thenReturn(Optional.empty());
+
+        Result<Tecnico> resultado = tecnicoService.save(tecnicoPrueba);
+
+        assertTrue(resultado.isSuccess());
+        assertEquals(tecnicoPrueba, resultado.getData());
+        assertEquals(tecnicoPrueba.getId(), resultado.getData().getId());
+        verify(tecnicoRepository, times(1)).save(any(Tecnico.class));
     }
 
     // TC-TECNICO-002
     @Test
-    void testFindById() {
-        when(tecnicoRepository.findById(1L)).thenReturn(Optional.of(tecnico));
-        Optional<Tecnico> resultado = tecnicoService.findById(1);
-        assertTrue(resultado.isPresent());
-        assertEquals(tecnico, resultado.get());
-        verify(tecnicoRepository, times(1)).findById(1L);
+    void testSaveTecnicoConDniDuplicado() {
+        Tecnico tecnicoConDniDuplicado = new Tecnico();
+        tecnicoConDniDuplicado.setId(null);
+        tecnicoConDniDuplicado.setNombre("Técnico Duplicado");
+        tecnicoConDniDuplicado.setDni(12345678); // Mismo DNI que el existente
+        tecnicoConDniDuplicado.setEstado(true);
+
+        when(tecnicoRepository.findByDni(tecnicoPrueba.getDni())).thenReturn(Optional.of(tecnicoPrueba));
+
+        Result<Tecnico> resultado = tecnicoService.save(tecnicoConDniDuplicado);
+
+        assertFalse(resultado.isSuccess());
+        assertTrue(resultado.isFailure());
+        assertTrue(resultado.getError() instanceof DuplicateError);
+        assertEquals("ERR-DUP", resultado.getError().getCode());
     }
 
     // TC-TECNICO-003
     @Test
-    void testFindByIdNotFound() {
-        when(tecnicoRepository.findById(99L)).thenReturn(Optional.empty());
-        Optional<Tecnico> resultado = tecnicoService.findById(99);
-        assertFalse(resultado.isPresent());
-        verify(tecnicoRepository, times(1)).findById(99L);
+    void testFindById() {
+        when(tecnicoRepository.findById(1L)).thenReturn(Optional.of(tecnicoPrueba));
+        Result<Tecnico> resultado = tecnicoService.findById(1L);
+
+        assertTrue(resultado.isSuccess());
+        assertNotNull(resultado.getData());
+        assertEquals(tecnicoPrueba.getId(), resultado.getData().getId());
     }
 
     // TC-TECNICO-004
     @Test
-    void testFindAll() {
-        List<Tecnico> tecnicos = Arrays.asList(tecnico);
-        when(tecnicoRepository.findAll()).thenReturn(tecnicos);
-        List<Tecnico> resultado = tecnicoService.findAll();
-        assertEquals(1, resultado.size());
-        assertEquals(tecnico, resultado.get(0));
-        verify(tecnicoRepository, times(1)).findAll();
+    void testFindByIdNotFound() {
+        when(tecnicoRepository.findById(99L)).thenReturn(Optional.empty());
+        Result<Tecnico> resultado = tecnicoService.findById(99);
+        assertFalse(resultado.isSuccess());
+        assertTrue(resultado.isFailure());
+        assertTrue(resultado.getError() instanceof NotFoundError);
     }
 
     // TC-TECNICO-005
     @Test
-    void testFindHabilitados() {
-        List<Tecnico> tecnicosHabilitados = Arrays.asList(tecnico);
-        when(tecnicoRepository.findByEstadoIsTrue()).thenReturn(tecnicosHabilitados);
-        List<Tecnico> resultado = tecnicoService.findHabiliitados();
-        assertEquals(1, resultado.size());
-        assertEquals(tecnico, resultado.get(0));
-        verify(tecnicoRepository, times(1)).findByEstadoIsTrue();
+    void testFindAll() {
+        List<Tecnico> tecnicos = new ArrayList<>();
+        tecnicos.add(tecnicoPrueba);
+        tecnicos.add(tecnicoDeshabilitado);
+
+        when(tecnicoRepository.findAll()).thenReturn(tecnicos);
+
+        Result<List<Tecnico>> resultado = tecnicoService.findAll();
+
+        assertTrue(resultado.isSuccess());
+        assertEquals(2, resultado.getData().size());
+
     }
 
     // TC-TECNICO-006
     @Test
-    void testGetEstado() {
-        assertTrue(tecnico.getEstado());
+    void testFindHabilitados() {
+        List<Tecnico> tecnicosHabilitados = new ArrayList<>();
+        tecnicosHabilitados.add(tecnicoPrueba);
 
-        tecnico.setEstado(false);
-        assertFalse(tecnico.getEstado());
+        when(tecnicoRepository.findByEstadoIsTrue()).thenReturn(tecnicosHabilitados);
+
+        Result<List<Tecnico>> resultado = tecnicoService.findHabilitados();
+
+        assertTrue(resultado.isSuccess());
+        assertEquals(1, resultado.getData().size());
+        assertEquals(tecnicoPrueba.getId(), resultado.getData().get(0).getId());
     }
 
-    // TC-TECNICO-007
-    @Test
-    void testSetEstado() {
-        tecnico.setEstado(false);
-        assertFalse(tecnico.getEstado());
-
-        tecnico.setEstado(true);
-        assertTrue(tecnico.getEstado());
-    }
 }
