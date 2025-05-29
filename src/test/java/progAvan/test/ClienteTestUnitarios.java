@@ -8,6 +8,8 @@ import org.mockito.MockitoAnnotations;
 import progAvan.Model.Cliente;
 import progAvan.Repository.ClienteRepository;
 import progAvan.Service.ClienteService;
+import progAvan.shared.Result;
+import progAvan.shared.error.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,21 +56,31 @@ public class ClienteTestUnitarios {
     @Test
     void testSaveClienteExitoso() {
         when(clienteRepository.save(any(Cliente.class))).thenReturn(clientePrueba);
+        when(clienteRepository.findByDni(clientePrueba.getDni())).thenReturn(Optional.empty());
 
-        clienteService.save(clientePrueba);
+        Result<Cliente> resultado = clienteService.save(clientePrueba);
 
+        assertTrue(resultado.isSuccess());
+        assertNotNull(resultado.getData());
+        assertEquals(clientePrueba.getId(), resultado.getData().getId());
         verify(clienteRepository, times(1)).save(any(Cliente.class));
     }
 
     // TC-CLIENTE-002
     @Test
     void testSaveClienteSinDatosObligatorios() {
-        when(clienteRepository.save(clienteInvalido))
-                .thenThrow(new RuntimeException("Error al guardar cliente sin datos obligatorios"));
+        // Configuramos el cliente inválido sin nombre
+        clienteInvalido.setNombre(null);
 
-        assertThrows(RuntimeException.class, () -> {
-            clienteService.save(clienteInvalido);
-        });
+        // No necesitamos configurar el mock para el repositorio ya que la validación
+        // ocurre antes
+
+        Result<Cliente> resultado = clienteService.save(clienteInvalido);
+
+        assertFalse(resultado.isSuccess());
+        assertTrue(resultado.isFailure());
+        assertNotNull(resultado.getError());
+        assertTrue(resultado.getError() instanceof ValidationError);
     }
 
     // TC-CLIENTE-003
@@ -76,10 +88,11 @@ public class ClienteTestUnitarios {
     void testFindById() {
         when(clienteRepository.findById(1L)).thenReturn(Optional.of(clientePrueba));
 
-        Optional<Cliente> resultado = clienteService.findById(1L);
+        Result<Cliente> resultado = clienteService.findById(1L);
 
-        assertTrue(resultado.isPresent());
-        assertEquals(clientePrueba.getId(), resultado.get().getId());
+        assertTrue(resultado.isSuccess());
+        assertNotNull(resultado.getData());
+        assertEquals(clientePrueba.getId(), resultado.getData().getId());
     }
 
     // TC-CLIENTE-004
@@ -87,9 +100,11 @@ public class ClienteTestUnitarios {
     void testFindByIdInexistente() {
         when(clienteRepository.findById(999L)).thenReturn(Optional.empty());
 
-        Optional<Cliente> resultado = clienteService.findById(999L);
+        Result<Cliente> resultado = clienteService.findById(999L);
 
-        assertFalse(resultado.isPresent());
+        assertFalse(resultado.isSuccess());
+        assertTrue(resultado.isFailure());
+        assertTrue(resultado.getError() instanceof NotFoundError);
     }
 
     // TC-CLIENTE-005
@@ -100,10 +115,11 @@ public class ClienteTestUnitarios {
 
         when(clienteRepository.findByEstadoIsTrue()).thenReturn(clientesHabilitados);
 
-        List<Cliente> resultado = clienteService.findHabilitados();
+        Result<List<Cliente>> resultado = clienteService.findHabilitados();
 
-        assertEquals(1, resultado.size());
-        assertEquals(clientePrueba.getId(), resultado.get(0).getId());
+        assertTrue(resultado.isSuccess());
+        assertEquals(1, resultado.getData().size());
+        assertEquals(clientePrueba.getId(), resultado.getData().get(0).getId());
     }
 
     // TC-CLIENTE-006
@@ -121,9 +137,10 @@ public class ClienteTestUnitarios {
 
         when(clienteRepository.findAll()).thenReturn(todosLosClientes);
 
-        List<Cliente> resultado = clienteService.findAll();
+        Result<List<Cliente>> resultado = clienteService.findAll();
 
-        assertEquals(2, resultado.size());
+        assertTrue(resultado.isSuccess());
+        assertEquals(2, resultado.getData().size());
     }
 
     // TC-CLIENTE-007
@@ -152,20 +169,91 @@ public class ClienteTestUnitarios {
 
     // TC-CLIENTE-009
     @Test
-    void testSaveClienteConEmailDuplicado() {
-        when(clienteRepository.save(any(Cliente.class)))
-                .thenThrow(new RuntimeException("Duplicate entry for key 'email'"));
+    void testToggleEstado() {
+        // Preparar un cliente activo para desactivar
+        Cliente clienteActivo = new Cliente();
+        clienteActivo.setId(7);
+        clienteActivo.setNombre("Cliente Activo");
+        clienteActivo.setDni(11223344);
+        clienteActivo.setEstado(true);
 
-        Cliente clienteConEmailDuplicado = new Cliente();
-        clienteConEmailDuplicado.setDni(98765432);
-        clienteConEmailDuplicado.setNombre("Cliente Nuevo");
-        clienteConEmailDuplicado.setDireccion("Otra Calle 456");
-        clienteConEmailDuplicado.setTelefono("11-4444-5555");
-        clienteConEmailDuplicado.setEmail("cliente@test.com"); // Email duplicado
-        clienteConEmailDuplicado.setEstado(true);
+        // El cliente después de desactivarlo
+        Cliente clienteDesactivado = new Cliente();
+        clienteDesactivado.setId(7);
+        clienteDesactivado.setNombre("Cliente Activo");
+        clienteDesactivado.setDni(11223344);
+        clienteDesactivado.setEstado(false);
 
-        assertThrows(RuntimeException.class, () -> {
-            clienteService.save(clienteConEmailDuplicado);
-        });
+        when(clienteRepository.findById(7L)).thenReturn(Optional.of(clienteActivo));
+        when(clienteRepository.save(any(Cliente.class))).thenReturn(clienteDesactivado);
+
+        Result<Cliente> resultado = clienteService.toggleEstado(7L);
+
+        assertTrue(resultado.isSuccess());
+        assertFalse(resultado.getData().getEstado()); // Verifica que el estado cambió a false
+        assertEquals("Cliente deshabilitado correctamente", resultado.getMessage());
+    }
+
+    // TC-CLIENTE-010
+    @Test
+    void testSaveClienteConDniDuplicado() { // Preparamos un cliente existente con el mismo DNI
+        Cliente clienteExistente = new Cliente();
+        clienteExistente.setId(5);
+        clienteExistente.setDni(98765432);
+        clienteExistente.setNombre("Cliente Existente");
+        clienteExistente.setEstado(true);
+
+        Cliente clienteConDniDuplicado = new Cliente();
+        clienteConDniDuplicado.setId(null); // No tiene ID aún (nuevo cliente)
+        clienteConDniDuplicado.setDni(98765432); // DNI duplicado
+        clienteConDniDuplicado.setNombre("Cliente Nuevo");
+        clienteConDniDuplicado.setDireccion("Otra Calle 456");
+        clienteConDniDuplicado.setTelefono("11-4444-5555");
+        clienteConDniDuplicado.setEmail("nuevo@test.com");
+        clienteConDniDuplicado.setEstado(true);
+
+        when(clienteRepository.findByDni(98765432)).thenReturn(Optional.of(clienteExistente));
+
+        // Ejecutar
+        Result<Cliente> resultado = clienteService.save(clienteConDniDuplicado);
+
+        // Verificar
+        assertFalse(resultado.isSuccess());
+        assertTrue(resultado.isFailure());
+        assertTrue(resultado.getError() instanceof DuplicateError);
+        assertEquals("ERR-DUP", resultado.getError().getCode());
+    }
+
+    // TC-CLIENTE-011
+    @Test
+    void testSaveClienteConDniDeClienteArchivado() {
+        // Preparamos un cliente existente archivado con el mismo DNI
+        Cliente clienteArchivoExistente = new Cliente();
+        clienteArchivoExistente.setId(6);
+        clienteArchivoExistente.setDni(87654321);
+        clienteArchivoExistente.setNombre("Cliente Archivado");
+        clienteArchivoExistente.setEstado(false); // Cliente archivado (deshabilitado)
+
+        Cliente clienteConDniArchivado = new Cliente();
+        clienteConDniArchivado.setId(null); // No tiene ID aún (nuevo cliente)
+        clienteConDniArchivado.setDni(87654321); // DNI duplicado con cliente archivado
+        clienteConDniArchivado.setNombre("Cliente Nuevo");
+        clienteConDniArchivado.setDireccion("Otra Calle 789");
+        clienteConDniArchivado.setTelefono("11-5555-6666");
+        clienteConDniArchivado.setEmail("nuevo2@test.com");
+        clienteConDniArchivado.setEstado(true);
+
+        when(clienteRepository.findByDni(87654321)).thenReturn(Optional.of(clienteArchivoExistente));
+
+        // Ejecutar
+        Result<Cliente> resultado = clienteService.save(clienteConDniArchivado);
+
+        // Verificar
+        assertFalse(resultado.isSuccess());
+        assertTrue(resultado.isFailure());
+        assertTrue(resultado.getError() instanceof ArchivedEntityError);
+        assertEquals("ERR-ARCH", resultado.getError().getCode());
+        assertNotNull(resultado.getData()); // Debe contener la entidad archivada
+        assertEquals(clienteArchivoExistente.getId(), resultado.getData().getId());
     }
 }

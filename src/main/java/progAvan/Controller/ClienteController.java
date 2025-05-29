@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import progAvan.Model.Cliente;
-import progAvan.Service.ClienteServiceMejorado;
+import progAvan.Service.ClienteService;
 import progAvan.shared.Result;
 
 @RestController
@@ -25,7 +25,7 @@ import progAvan.shared.Result;
 public class ClienteController {
 
     @Autowired
-    private ClienteServiceMejorado clienteService;
+    private ClienteService clienteService;
 
     Map<String, String> response = new HashMap<>();
 
@@ -147,7 +147,6 @@ public class ClienteController {
     @PostMapping(value = "/eliminar/{id}")
     public ResponseEntity<Result<Cliente>> eliminar(@PathVariable int id) {
         try {
-            // Usando el método toggleEstado del servicio mejorado
             Result<Cliente> result = clienteService.toggleEstado(id);
 
             if (result.isSuccess()) {
