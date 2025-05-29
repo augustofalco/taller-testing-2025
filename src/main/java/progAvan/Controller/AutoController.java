@@ -104,7 +104,7 @@ public class AutoController {
 
             if (optionalAuto.isPresent()) {
                 Auto auto = optionalAuto.get();
-                auto.setEstado(!auto.getHabilitado());
+                auto.setEstado(false);  // Deshabilitar el auto
                 autoService.save(auto);
 
                 this.response.put("message", "success");

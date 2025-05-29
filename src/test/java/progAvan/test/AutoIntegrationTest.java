@@ -198,7 +198,7 @@ public class AutoIntegrationTest {
         // Verificar que el estado cambió en la base de datos
         Auto autoActualizado = autoRepository.findById(autoId).orElse(null);
         assertNotNull(autoActualizado);
-        assertFalse(autoActualizado.getHabilitado());
+        assertFalse(autoActualizado.getEstado());
     }
 
     // TC-AUTO-INTEGRACION-006

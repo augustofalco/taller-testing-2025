@@ -2,7 +2,6 @@ package progAvan.Model;
 
 import java.util.regex.Matcher;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -33,18 +32,13 @@ public class Auto {
 
     private boolean estado;
 
-    @Nullable()
-    private boolean habilitado;
-
     public boolean getEstado() {
         return estado;
     }
 
     public void setEstado(boolean estado) {
         this.estado = estado;
-    }
-
-    public boolean validarPatente(String patente) {
+    }    public boolean validarPatente(String patente) {
         if (patente == null) {
             return false;
         }
@@ -56,9 +50,5 @@ public class Auto {
         java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(patronNuevo + "|" + patronViejo);
         Matcher matcher = pattern.matcher(patente);
         return matcher.matches();
-    }
-
-    public boolean getHabilitado() {
-        return this.habilitado;
     }
 }
