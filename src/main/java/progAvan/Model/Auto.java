@@ -1,6 +1,7 @@
 package progAvan.Model;
 
 import java.util.regex.Matcher;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -37,9 +38,7 @@ public class Auto {
 
     public void setEstado(boolean estado) {
         this.estado = estado;
-    }
-
-    public boolean validarPatente(String patente) {
+    }    public boolean validarPatente(String patente) {
         if (patente == null) {
             return false;
         }
