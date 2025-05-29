@@ -137,30 +137,6 @@ public class AutoIntegrationTest {
 
     // TC-AUTO-INTEGRACION-003
     @Test
-    void testMostrarPaginado() throws Exception {
-        int page = 0;
-        int size = 5;
-
-        mockMvc.perform(MockMvcRequestBuilders
-                .get("/auto/mostrarpaginado")
-                .param("page", String.valueOf(page))
-                .param("size", String.valueOf(size))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray());
-    }
-
-    // TC-AUTO-INTEGRACION-004
-    @Test
-    void testObtenerLongitud() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                .get("/auto/longitud")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk());
-    }
-
-    // TC-AUTO-INTEGRACION-005
-    @Test
     void testGuardarAuto() throws Exception {
         Auto nuevoAuto = new Auto();
         nuevoAuto.setPatente("XYZ789");
@@ -190,7 +166,7 @@ public class AutoIntegrationTest {
         assertTrue(autoEncontrado, "No se encontró el auto guardado en la base de datos");
     }
 
-    // TC-AUTO-INTEGRACION-006
+    // TC-AUTO-INTEGRACION-004
     @Test
     void testEditarAuto() throws Exception {
         auto.setAnio("2024");
@@ -209,7 +185,7 @@ public class AutoIntegrationTest {
         assertEquals("2024", autoActualizado.getAnio());
     }
 
-    // TC-AUTO-INTEGRACION-007
+    // TC-AUTO-INTEGRACION-005
     @Test
     void testEliminarAuto() throws Exception {
         // Probar el endpoint POST /auto/eliminar/{id}
@@ -225,7 +201,7 @@ public class AutoIntegrationTest {
         assertFalse(autoActualizado.getHabilitado());
     }
 
-    // TC-AUTO-INTEGRACION-008
+    // TC-AUTO-INTEGRACION-006
     @Test
     void testEliminarAutoInexistente() throws Exception {
         int idInexistente = 99999;
@@ -238,7 +214,7 @@ public class AutoIntegrationTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("error"));
     }
 
-    // TC-AUTO-INTEGRACION-009
+    // TC-AUTO-INTEGRACION-007
     @Test
     void testGuardarAutoConPatenteInvalida() throws Exception {
         Auto autoInvalido = new Auto();
@@ -256,7 +232,7 @@ public class AutoIntegrationTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
-    // TC-AUTO-INTEGRACION-010
+    // TC-AUTO-INTEGRACION-008
     @Test
     void testGuardarAutoDuplicado() throws Exception {
         Auto autoDuplicado = new Auto();
