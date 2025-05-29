@@ -104,9 +104,8 @@ public class AutoController {
 
             if (optionalAuto.isPresent()) {
                 Auto auto = optionalAuto.get();
-                // auto.setEstado(!auto.getEstado());
-                // autoService.save(auto);
-                autoService.deshabilitarAuto(auto.getId());
+                auto.setEstado(!auto.getHabilitado());
+                autoService.save(auto);
 
                 this.response.put("message", "success");
                 return new ResponseEntity<>(this.response, HttpStatus.OK);
