@@ -3,7 +3,6 @@ package progAvan.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +27,6 @@ public class ClienteController {
     @Value("${path_general}")
     String path;
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/guardar")
     public ResponseEntity<Result<Cliente>> guardar(@RequestBody Cliente model) {
         try {
@@ -60,7 +58,6 @@ public class ClienteController {
         }
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/mostrar")
     public ResponseEntity<?> mostrar() {
         Result<List<Cliente>> result = clienteService.findAll();
@@ -73,7 +70,6 @@ public class ClienteController {
         }
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/mostrarHabilitados")
     public ResponseEntity<?> mostrarHabilitados() {
         Result<List<Cliente>> result = clienteService.findHabilitados();
@@ -86,7 +82,6 @@ public class ClienteController {
         }
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/editar/{id}")
     public ResponseEntity<Result<Cliente>> actualizar(@PathVariable int id, @RequestBody Cliente model) {
         try {
@@ -120,7 +115,6 @@ public class ClienteController {
         }
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/eliminar/{id}")
     public ResponseEntity<Result<Cliente>> eliminar(@PathVariable int id) {
         try {
@@ -140,20 +134,17 @@ public class ClienteController {
         }
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/mostrarpaginado")
     public List<Cliente> mostrarPaginado(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return clienteService.findPaginado(page, size);
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/longitud")
     public long longitud() {
         return clienteService.longitud();
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/mostrar/{nombre}")
     public List<Cliente> buscarPorAtributo(@PathVariable String nombre) {
         return clienteService.buscarPorAtributo(nombre);

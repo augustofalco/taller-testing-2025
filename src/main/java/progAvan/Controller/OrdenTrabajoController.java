@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +29,6 @@ public class OrdenTrabajoController {
 
     Map<String, String> response = new HashMap<>();
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/guardar")
     public ResponseEntity<Map<String, String>> guardar(@RequestBody OrdenTrabajo model) {
         try {
@@ -54,32 +52,27 @@ public class OrdenTrabajoController {
         }
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/mostrarpaginado")
     public List<OrdenTrabajo> mostrarPaginado(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return ordenTrabajoService.findPaginado(page, size);
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/mostrar")
     public List<OrdenTrabajo> mostrar() {
         return ordenTrabajoService.findAll();
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/longitud")
     public long longitud() {
         return ordenTrabajoService.longitud();
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/mostrarHabilitados")
     public List<OrdenTrabajo> mostrarHabilitados() {
         return ordenTrabajoService.findHabiliitados();
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/editar/{id}")
     public ResponseEntity<Map<String, String>> actualizar(@PathVariable int id, @RequestBody OrdenTrabajo model) {
         try {
@@ -118,7 +111,6 @@ public class OrdenTrabajoController {
         }
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/mostrar/ultima/{idCliente}")
     public ResponseEntity<?> ultimaOrdenCliente(@PathVariable int idCliente) {
         try {
@@ -132,7 +124,6 @@ public class OrdenTrabajoController {
         }
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/eliminar/{id}")
     public ResponseEntity<Map<String, String>> eliminar(@PathVariable int id) {
         try {
@@ -155,7 +146,6 @@ public class OrdenTrabajoController {
         }
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/mostrar/{nombre}/{fechaInferior}/{fechaSuperior}")
     public List<OrdenTrabajo> buscarPorAtributo(@PathVariable String nombre, @PathVariable String fechaInferior,
             @PathVariable String fechaSuperior) {

@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,26 +36,22 @@ public class AutoController {
 
     Map<String, String> response = new HashMap<>();
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/mostrarpaginado")
     public List<Auto> mostrarPaginado(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return autoService.findPaginado(page, size);
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/mostrar/{patente}")
     public List<Auto> buscarPorAtributo(@PathVariable String patente) {
         return autoService.findByPatente(patente);
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/longitud")
     public long longitud() {
         return autoService.longitud();
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/guardar")
     @ApiOperation(value = "Traer auto")
     public ResponseEntity<Map<String, String>> guardar(@Valid @RequestBody Auto model) {
@@ -70,19 +65,16 @@ public class AutoController {
         }
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/mostrar")
     public List<Auto> mostrar() {
         return autoService.findAll();
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/mostrarHabilitados")
     public List<Auto> mostrarHabilitados() {
         return autoService.findHabilitados();
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/editar/{id}")
     public ResponseEntity<Map<String, String>> actualizar(@PathVariable int id, @Valid @RequestBody Auto model) {
         // Auto auto = autoService.findById(id).orElse(null);
@@ -95,8 +87,7 @@ public class AutoController {
             return new ResponseEntity<>(this.response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
+    
     @PostMapping(value = "/eliminar/{id}")
     public ResponseEntity<Map<String, String>> eliminar(@PathVariable int id) {
         try {

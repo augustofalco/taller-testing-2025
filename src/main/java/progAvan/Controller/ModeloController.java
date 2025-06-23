@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +27,6 @@ public class ModeloController {
 
     Map<String, String> response = new HashMap<>();
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/guardar")
     public ResponseEntity<Map<String, String>> guardar(@RequestBody Modelo model) {
         try {
@@ -41,39 +39,33 @@ public class ModeloController {
         }
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/mostrarpaginado")
     public List<Modelo> mostrarPaginado(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return modeloService.findPaginado(page, size);
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/longitud")
     public long longitud() {
         return modeloService.longitud();
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/mostrarHabilitados")
     public List<Modelo> mostrarHabilitados() {
         return modeloService.findHabilitados();
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/mostrarInhabilitados")
     public List<Modelo> mostrarInhabilitados() {
         return modeloService.findInhabilitados();
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @GetMapping(value = "/mostrarXMarca/{id}")
     public List<Modelo> mostrarXMarca(@PathVariable int id) {
         System.out.println(id);
         return modeloService.findModelosXMarca(id);
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/editar/{id}")
     public ResponseEntity<Map<String, String>> actualizar(@PathVariable int id, @RequestBody Modelo model) {
         // Modelo modelo = modeloService.findById(id).orElse(null);
@@ -87,7 +79,6 @@ public class ModeloController {
         }
     }
 
-    @CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
     @PostMapping(value = "/eliminar/{id}")
     public ResponseEntity<Map<String, String>> eliminar(@PathVariable int id) {
         try {
