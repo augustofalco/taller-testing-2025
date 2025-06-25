@@ -2,7 +2,7 @@ FROM amazoncorretto:21-alpine-jdk as build
 
 WORKDIR /app
 COPY . .
-RUN ./mvnw clean package -DskipTests
+RUN chmod +x ./mvnw && ./mvnw clean package -DskipTests
 
 FROM amazoncorretto:21-alpine-jdk
 WORKDIR /app
